@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<style>
+
+	 body{
+	 	background-color:dodgerblue;
+	 }
+	 h1{
+	 	font-family:Centaur, serif;
+	 }
+	 ul,span{
+	 	font: 18px Centaur, serif;
+	 }
+	 #Map{
+     		float:left;
+     		display:inline-block;
+			height:800px;
+			width:800px;
+			left:25%;
+			right:25%;
+			top:25%;
+			bottom:25%;
+			background-image:url("http://i.imgur.com/TmeSkP8.png");
+			background-size:100% 100%;
+		}
+
+	#Entrance{
+		position:absolute;
+		width:129px;
+		height:109px;
+		background-image:url("http://i.imgur.com/vIfBXtI.png");
+		background-size:100% 100%;
+		margin-top:445px;
+		margin-left:-28px;
+	}
+	#Trap1{
+		position:absolute;
+		width:95px;
+		height:100px;
+		background-image:url("http://i.imgur.com/0k0QjsZ.png");
+		background-size:100% 100%;
+		margin-top:200px;
+		margin-left:238px;
+	}
+	#Trap2{
+		position:absolute;
+		width:275px;
+		height:98px;
+		background-image:url("http://i.imgur.com/8D8IuJQ.png");
+		background-size:100% 100%;
+		margin-top:683px;
+		margin-left:202px;
+
+	}
+	#Trap3{
+		position:absolute;
+		width:90px;
+		height:102px;
+		background-image:url("http://i.imgur.com/r1yLOiI.png");
+		background-size:100% 100%;
+		margin-top:595px;
+		margin-left:442px;
+	}
+	#Trap4{
+		position:absolute;
+		width:80px;
+		height:85px;
+		background-image:url("http://i.imgur.com/2ZCGXOS.png");
+		background-size:100% 100%;
+		margin-top:76px;
+		margin-left:415px;
+	}
+	#Trap5{
+		position:absolute;
+		width:97px;
+		height:80px;
+		background-image:url("http://i.imgur.com/EMvU9hU.png");
+		background-size:100% 100%;
+		margin-top:293px;
+		margin-left:396px;
+	}
+	#Trap6{
+		position:absolute;
+		width:113px;
+		height:113px;
+		background-image:url("http://i.imgur.com/V2yyZiq.png");
+		background-size:100% 100%;
+		margin-top:285px;
+		margin-left:510px;
+	}
+	#Dragon{
+		position:absolute;
+		width:105px;
+		height:135px;
+		background-image:url("http://i.imgur.com/Y0AlRNK.png");
+		background-size:100% 100%;
+		margin-top:263px;
+		margin-left:620px;
+	}
+	.highlight{opacity:0.1;}
+	.highlight.main, .highlight:hover{opacity:1;}
+	.Zoom{
+		display:none;
+	}
+	.Zoom.activeZoom{
+		float:right;
+		display:inline-block;
+		width:500px;
+		height:800px;
+		font:black;
+		text-align:center;
+
+	}
+	li{
+		list-style:none;
+		border:1px solid;
+	}
+	.Cards{
+		display:inline-block;
+		float:right;
+		width:195px;
+		}
+	.Notes{
+		display:inline-block;
+		float:left;
+		width:300px;
+
+	}
+	#Explosions{
+		display:inline-block;
+		width:500px;
+	}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	</head>
+	<body>
+	<div id="Board">
+		<div id="Map">
+			<div id="Entrance" class="highlight main"></div>
+			<div id="Trap1" class="highlight"></div>
+			<div id="Trap2" class="highlight"></div>
+			<div id="Trap3" class="highlight"></div>
+			<div id="Trap4" class="highlight"></div>
+			<div id="Trap5" class="highlight"></div>
+			<div id="Trap6" class="highlight"></div>
+			<div id="Dragon" class="highlight"></div>
+		</div>
+
+		<div id="EntranceZoom" class="Zoom activeZoom"><h1>The Tentacle's Map of Aurdinas Lair<br> by Wizard Aves and Light Krzysiekxd</h1>
+			<h1>Click on an area to learn about its traps and how to avoid them!</h1>
+			<img src="http://i.imgur.com/64kuWrC.png" width="400px">
+		
+		</div>
+		<div id="Trap1Zoom" class="Zoom"><h1>The Rope Trap</h1><img src="http://i.imgur.com/eGmlyv1.png?1" width="400px"><br>
+		<span>"AHHHHH! Let me down! Let me down!" shrieked the shining tentacle. His frantic movements made the cave passage seem to swoon, illuminated by the world's first swinging living lightbulb. </span><br>
+		<span>"Squirt your ink! It'll make you more slippery and smaller and you'll fall out!" ordered the wizard distractedly, scribbling at a piece of parchment. "And stop swinging so much!"</span>
+		<div><div class="Notes"><ul>
+		Wizard's notes:
+		<li>Obstacle Name: Rope Trap</li>
+		<li>Danger Level: Low</li>
+		<li>Method of Remedy: Ink Squirts</li>
+		<li>Side Effects: Dehydration</li>
+		<li>Path to Dragon: Negative</li>
+		<li>Requires Explosives: Negative</li>
+		<li>Addendum: Subject Krzysiekxd seems quite displeased with this treatment. This is only the first trap. Must investigate further motivating actions</li>
+		</ul></div><div class="Cards"><br><br><img src="http://elementscommunity.org/images/Cards/MarkOfWaterUpgraded.png"></div></div></div>
+		<div id="Trap2Zoom" class="Zoom"><h1>The Boulder Trap</h1><img src="http://i.imgur.com/cP0DEpW.png?1" height="50%" width="400px"><br>
+		<span>"AHHHHH!" shrieked the white tentacle. <i>Why was he screaming already</i> wondered Aves. Poking his sucker into the hallway, the wizard caught sight of a large rolling stone, and quickly jerked the appendage back. As the boulder rolled out of the entrance, Aves quickly moved towards the flattened body of the bard. Scooting closer to the diminishing light, he hurriedly took some notes before the illumination ran out. Drat. He'd have to actually do something this time.</span>
+		<div><div class="Notes"><ul>
+		Wizard's notes:
+		<li>Obstacle Name: Boulder Trap</li>
+		<li>Danger Level: High</li>
+		<li>Method of Remedy: Rewind Time</li>
+		<li>Side Effects: Confusion</li>
+		<li>Path to Dragon: Negative</li>
+		<li>Requires Explosives: Negative</li>
+		<li>Addendum: The first death. Luckily he doesn't remember it. Will have to be more careful. Less distractions!</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/Rewind.png"></div></div>
+		</div>
+		<div id="Trap3Zoom" class="Zoom"><h1>The Cage</h1><img src="http://i.imgur.com/F5xPr1H.png?1" width="400px"><br>
+			<span>"AHHHHH!" screamed the glowing tentacle. "Get me out!" </span><br><span><i>What now</i> wondered Aves. Poking his sucker into the hallway, the wizard caught sight of the bard's predicament. "Stop screaming, grab your cutlass, and just cut yourself out. It's made out of this weak land material called 'wood.'" Shaking his top sucker, the wizard jotted a few more notes onto the map.</span>
+		<div><div class="Notes"><ul>
+		Wizard's notes:
+		<li>Obstacle Name: Cage Trap</li>
+		<li>Danger Level: Low</li>
+		<li>Method of Remedy: Cutlass</li>
+		<li>Side Effects: None</li>
+		<li>Path to Dragon: Negative</li>
+		<li>Requires Explosives: Negative</li>
+		<li>Addendum: Standard issue gear is actually useful for once</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/LongSword.png"></div></div></div>
+		<div id="Trap4Zoom" class="Zoom"><h1>The Snake Trap</h1><img src="http://i.imgur.com/tS84TeF.png" width="400px">
+		<br><br>
+		<span>"Help!" cried the luminescent tentacle. The bard was being attacked by strange slithering land creatures! Fortunately, the sea-wizard had many tricks to deal with such foes. Time for a bit of desiccation!</span>
+		<div><div class="Notes"><ul>
+		Wizard's notes:
+		<li>Obstacle Name: Snake Trap</li>
+		<li>Danger Level: Medium</li>
+		<li>Method of Remedy: Desiccation</li>
+		<li>Side Effects: Severe Dehydration</li>
+		<li>Path to Dragon: Negative</li>
+		<li>Requires Explosives: Negative</li>
+		<li>Addendum: High on quanta. Feels good..</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/Desiccation.png"></div></div></div>
+		<div id="Trap5Zoom" class="Zoom"><h1>The Poison Pit</h1><img src="http://i.imgur.com/5CKFQon.png" width="400px"><br>
+		<span>"NOT WATER NOT WATER!" cried the bard. Upon seeing the pool of liquid, the white tentacle had eagerly jumped in to recover from the earlier desiccation. Preparing a purification spell, Aves sighed. The things he had to do...</span>
+		<div><div class="Notes"><ul>Wizard's notes:
+		<li>Obstacle Name: Poison Trap</li>
+		<li>Danger Level: Medium</li>
+		<li>Method of Remedy: Purification</li>
+		<li>Side Effects: Increased hydration</li>
+		<li>Path to Dragon: Confirmed</li>
+		<li>Requires Explosives: Negative</li>
+		<li>Addendum: The final path!</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/PurifyUpgraded.png"></div></div></div>
+		<div id="Trap6Zoom" class="Zoom"><h1>Rubble</h1><br>
+		<span>"AHHH-" the bard was muffled with a quick slap.</span><br><span>"Quiet!" The wizard pointed to the cracks in the rubble. "There's the dragon, sleeping! We've accomplished our goal. Just set the explosives into the Pulverizer and we can get out of here!" </span><br><span>"That's all the traps?" asked the bard. </span><br><span>"Yes. A job well done!"</span><br><span>"Phew, I'm glad I didn't die springing all those traps!" the bard exclaimed.</span><br><span>"Yeah, how about that..." the wizard replied nervously.</span>
+		<div><div class="Notes"><ul>Wizard's notes:
+		<li>Obstacle Name: Rubble</li>
+		<li>Danger Level: Low</li>
+		<li>Method of Remedy: Pulverizer, Explosives</li>
+		<li>Side Effects: Opens up the passage</li>
+		<li>Path to Dragon: Confirmed</li>
+		<li>Requires Explosives: Confirmed</li>
+		<li>Addendum: The dragon sleeps beyond. Care must be taken not to wake it until the plan is ready</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/PulverizerUpgraded.png"></div></div><div id="Explosions"><img src="http://elementscommunity.org/images/Cards/Explosion.png"><img src="http://elementscommunity.org/images/Cards/Explosion.png"><img src="http://elementscommunity.org/images/Cards/Explosion.png"></div></div>
+		</div>
+		<div id="DragonZoom" class="Zoom"><h1>The Dragon</h1><img src="http://i.imgur.com/OUAzse3.png" width="400px"><br>
+		<span>"AHHHCHOOO!" The bard sneezed, and set off the explosives. With trembling suckers, the two tentacles exchanged nervous glances as the dragon let out a roar.</span><br><span>The wizard looked up with a jolt, dashing to the bard before he could sneeze.</span>
+		<div><div class="Notes"><ul>Wizard's notes:
+		<li>Obstacle Name: Dragon</li>
+		<li>Danger Level: Extreme</li>
+		<li>Method of Remedy: Prevention</li>
+		<li>Side Effects: Assert superiority</li>
+		<li>Path to Dragon: N/A</li>
+		<li>Requires Explosives: RUN AWAY</li>
+		<li>Addendum: Good thing I caught that...</li>
+		</ul></div><div class="Cards"><br><img src="http://elementscommunity.org/images/Cards/PrecognitionUpgraded.png"></div></div>
+		</div>
+	</div>
+		<script type="text/javascript">
+			$(".highlight").click(function(){
+				$('.main').removeClass('main');
+				$(this).addClass('main');
+				let zoomID = $(this).attr('id');
+				$('.activeZoom').removeClass('activeZoom');
+				$('#'+zoomID+"Zoom").addClass('activeZoom');
+			});
+		</script>
+	</body>
+</html>

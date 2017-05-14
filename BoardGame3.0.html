@@ -1,0 +1,885 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript" src="query-3.1.0.min.js"></script>
+	<style>
+
+		@keyframes backgroundAnimate{
+			0%, 100%{
+				opacity:1;
+			}
+			50%{
+				opacity:0.75;
+			}
+		}
+		@keyframes spin{
+			0%, 100%{
+				transform:rotate(0deg);
+			}
+			50%{
+				transform:rotate(360deg);
+			}
+		}
+		@keyframes move1{
+			0%{
+				margin-left:0%;
+			}
+			
+			100%{;
+				margin-left:100%;
+			}
+		}
+		@keyframes move2{
+		from { transform: rotate(0deg) translateX:(150px) rotate:(0deg); }
+   		to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+
+		}
+		*{
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+			user-select: none;          /* Likely future */   
+			font: 16px Georgia, sans serif;
+		}
+		#gameWrapper{
+			display:none;
+		}
+		#loadWrapper{
+			position: fixed;
+			top: 0;
+			left: 0;
+			width:100%;
+			height:100%;
+		}
+	
+		.loaded{
+			/*Give Body background*/
+			background-image:url("ColorExplosion.jpg");
+			background-size:100% 100%;
+			animation:backgroundAnimate 5s linear infinite;
+		}
+		.loadScreen{
+			display: block;
+			position: relative;
+			left: 50%;
+			top: 50%;
+			width: 150px;
+			height: 150px;
+			margin: -75px 0 0 -75px;
+			//border: 3px solid transparent;
+			border-top: 3px solid gold;
+			border-radius:75%;
+			animation:spin 2.5s ease-in-out infinite;
+		}
+	
+		.loadScreen::before {
+			content: "";
+			position: absolute;
+			top: 5px;
+			left: 5px;
+			right: 5px;
+			bottom: 5px;
+			//border: 3px solid transparent;
+			border-bottom: 3px solid green;
+			border-radius:75%;
+			animation:spin 2.0s ease-in-out infinite alternate-reverse;
+		}
+		.loadScreen::after {
+			content: "";
+			position: absolute;
+			top: 15px;
+			left: 15px;
+			right: 15px;
+			bottom: 15px;
+			border-left: 3px solid silver;
+			border-radius:75%;
+			animation:spin 1.5s ease-in-out infinite;
+
+		}
+		.loadText{
+			position:relative;
+			animation:move2 5s infinite;
+		}
+		.Tile{
+			height:50px;
+			width:50px;
+			margin:1px;
+			float:left;
+			box-shadow: .5 .5 .8 #000; /*Needs work*/
+			background-color:black;
+			text-align:center;
+			font: bold 30px Papyrus, serif;
+			background-blend-mode:luminosity;
+			
+
+		}
+
+		.activeTile{
+			opacity:.78;
+			box-shadow: inset 0 0 0 5px white;
+			animation:spin 5.5s ease-in-out infinite;
+			transform:scale(1.1);
+
+		}
+		.pauseTile{
+			animation-play-state: paused;
+		}
+		#gameNumbers, #Board{
+			display:inline-block;
+			height:520px;
+			width:520px;
+			background-image:url("FlameArtwork2.jpg");
+			background-size:100% 100%;
+			background-color:transparent;//#222200;
+
+		}
+		#gameNumbers{
+			float:right;
+			background:transparent;
+		}
+		li{
+			display:inline-block;
+			list-style:none;
+			background-color:#DD3542;
+			height:35px;
+			width:170px;
+			line-height:35px;
+			text-align:center;
+			box-shadow: 1.4 1.4 1.6 #FF0;
+		}
+		.statLabel{
+			display:block;
+		}
+		#muteBtn{
+			background-color:green;
+		}
+		#inputCode{
+			display:inline-block;
+		}
+		.hovering{
+			display:none;
+			opacity:0;
+		}
+		li:hover .hovering{
+			display:inline;
+			float:left;
+			opacity:.7;
+			background-color:#DDA;
+			cursor:default;
+		}
+		#brushesMenu{
+			display:none;
+		}
+	</style>
+</head>
+<body>
+	<noscript>
+		<style type="text/css">
+			#loadWrapper, #gameWrapper{
+				display:none;
+			}
+
+			noscript{
+				display:block;
+			}
+		</style>
+		<p>Your browser does not support javascript.</p>
+	</noscript>
+	<div id="loadWrapper">
+		<div id="loadText"></div>
+		<div class="loadScreen"></div>
+	</div>
+	<div id="gameWrapper">
+		<div id="ButtonBar"><ul id="mainMenu" class="menu">
+			<li id = "increaseBtn"><span id="increaseBtnText">IncrementValue</span><span class="hovering">Change the progression of colors.</span></li>
+			<li id = "brushesBtn"><span>Toggle Brushes</span><span class="hovering">Change Tile Selection Brush</span></li>
+			<li id = "upgradeBtn"><span>ALL</span><span class="hovering">Advance all tiles by a color.</span></li>
+			<li id = "lockBtn"><span>LOCK</span><span class="hovering">Stay at the current song until unlocked.</span></li>
+			<li id = "clearBtn"><span>CLEAR</span><span class="hovering">Reset all tiles to the default color.</span></li>
+			<li id = "muteBtn"><span id="MuteBtnText">Mute</span><span class="hovering">Mute all sounds. Tile progression will not change the soundtrack.</span></li>
+			<li id = "inputBtn"><input id="inputCode" type="text" value="0"><span id = "inputCodeText"class="hovering"></span></li>
+		</ul>
+		<ul id="brushesMenu" class="menu">
+			<!--li id = "backBtn"><span>Back to Menu</span><span class="hovering">Return to the main menu.</span></li>
+			<li id = "hoverBtn"><span id="hoverBtnText">HOVER: OFF</span><span class="hovering">Advance tiles through hovering.</span></li>
+			<li id = "crossBtn"><span id="crossBtnText">CROSS: OFF</span><span class="hovering">Advance tiles in a cross pattern.</span></li>
+			<li id = "rowBtn"><span id="rowBtnText">ROW: OFF</span><span class="hovering">Advance tiles in the same row.</span></li>
+			<li id = "colBtn"><span id="colBtnText">COLUMN: OFF</span><span class="hovering">Advance tiles in the same column.</span></li-->
+			</ul>
+		</div>
+		<div id="Board"></div>
+		<div id="gameNumbers"></div>
+		<div id="ytplayer"></div>
+	</div>
+	<script type = "text/javascript">
+//**************Initialization of LoadScreenText
+var loadContent = ["Loading...","Blah1", "Blah2", "Blah3", "BLah4"];
+var applyLoadContent = []; 
+for(let i = 0; i<loadContent.length; i++){
+	applyLoadContent.push("<span class='loadText'>"+loadContent[i]+"</span>");	
+}
+$('#loadText').html(applyLoadContent.join(''));
+//**************Initialization of Board
+
+var board = [];                     
+for(let i = 1; i<=100; i++){
+	board.push("<div class='Tile' draggable='false' data-id='"+i+"' data-state='"+0+"'></div>");
+}
+$('#Board').html(board.join(''));
+//**************Initailization of Game Stats
+
+//game stat variables
+var score = 0;
+var highScore = 0;
+var tileSum = 0;
+var activeScore = 0;
+var goal;
+function setGoal(){
+	goal = Math.floor(50+50*Math.random());
+	$("#goalLbl").text("Goal: "+goal);
+}
+setGoal();
+var gameVariables = [{name:"score", text:"Score", value:score}, {name:"highScore", text:"High Score", value:highScore}, {name:"tileSum", text:"Tile Sum", value:tileSum}, {name:"activeScore", text:"Active Score", value:activeScore}, {name:"goal", text:"Goal", value:goal}];
+board = [];
+for(let i = 0; i<gameVariables.length;i++){
+	board.push("<li id='"+gameVariables[i].name+"Lbl' class='statLabel'>"+gameVariables[i].text+": "+gameVariables[i].value+"</li>");
+}
+$("#gameNumbers").html(board.join(''));
+gameVariables = [score, highScore, tileSum, activeScore];
+//**************Initaliization of brushes menu
+var brushes = [{name:"hover", btnText:"HOVER: OFF", hoverText:"Advance tiles through hovering."},{name:"cross", btnText:"CROSS: OFF", hoverText:"Advance tiles in a cross pattern."},{name:"row", btnText:"ROW: OFF", hoverText:"Advance tiles in the same row."},{name:"col", btnText:"COLUMN: OFF", hoverText:"Advance tiles in the same column."},{name:"leftDiag", btnText:"LEFT DIAG: OFF", hoverText:"Advance tiles in the left diagonal."},{name:"rightDiag", btnText:"RIGHT DIAG: OFF", hoverText:"Advance tiles in the right diagonal."},{name:"knight", btnText:"KNIGHT: OFF", hoverText:"Advance tiles in Ls."}];
+
+var backBtn = "<li id = 'backBtn'><span>Back to Menu</span><span class='hovering'>Return to the main menu.</span></li>";
+var brushesMenu = [backBtn];
+for(let i = 0; i<brushes.length;i++){
+	brushesMenu.push("<li id = '"+brushes[i].name+"Btn'><span id='"+brushes[i].name+"BtnText'>"+brushes[i].btnText+"</span><span class='hovering'>"+brushes[i].hoverText+"</span></li>");
+}
+$('#brushesMenu').html(brushesMenu.join('\n'));
+//************** Initalization of global variables
+var states = ["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#FFFFFF",];//replaced!
+var incrementValue = 1;
+var activeTiles = [];
+var lockSong = false;
+
+
+
+//brushes
+var hoverBrush = false;
+var crossBrush = false;
+var rowBrush = false;
+var colBrush = false;
+var leftDiagBrush = false;
+var rightDiagBrush = false;
+var knightBrush = false;
+brushes = [hoverBrush, crossBrush, rowBrush, colBrush, leftDiagBrush, rightDiagBrush, knightBrush];
+//*************Color Generator
+states = [];
+function generateColors(){
+	var numStates = 5+50*Math.random();
+	while(numStates>0){
+		states.push('#' + ("000000" + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6));
+		numStates--;
+	}
+}
+generateColors();
+//**************** Youtube
+// 2. This code loads the IFrame Player API code asynchronously.
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// 3. This function creates an <iframe> (and YouTube player)
+//    after the API code downloads.
+var player;
+var timeoutVar;//for timeouts
+var mute = false;
+var customlist = [];
+var defaultlist = ["UBQUeVPdYvo","noneMROp_E8","xV6PsSUs5ow", "uIWUSd5O1L0", "0TmoYBcLul8", "l99uLeEVqp8", "tz82xbLvK_k", "c5daGZ96QGU", "62-DdZ_uM3k", "8VGI7PX8mic", "7BgAeFcTlA8", "EXNHXbpe1ac", "PeFhZMhN9Io", "w_QILPuvW-4", "_hH5MbSr734", "-zUayxi1Ono", "qonslJnjzWM", "4nXG4Cp-1RI", "Azxk0PgseyI", "nVhd16EzRic", "eFHdRkeEnpM", "OixZKhcq1fQ"];
+var rwbylist = ["EczdC7_WxVQ","xmOZL_0rj70","If1jeIstbJs","JsValLyKX_E","siHx0Yo-mqE","Abf8CQ_dxzc","ili_HdPj8Ik","bUuoYqyLw_k","B5yY4aGqUsc","zDXgbdhj5Zc"];
+var tsfh0 = ["LRLdhFVzqt4","R4Jf6r6BU2A","jIxas0a-KgM","6O6Q1OiF6LI","D4tF4R24t1g","pKv_wua6kFE"];
+var tsfh1 = ["tGh4FcZKekA","2nKqerDrg7M","n-Dh3ftkRAs","RKmw9oS__MM","8VGI7PX8mic","PMPefT3IUZ8","QDMFwG8A5SU","I36GfCl_01A","rNdZu0A6Qks","bG2BEjDfh3I","w8GwTV1TAns","6tByGFY8WRY","SxThZpslbhE","6tByGFY8WRY","ZZ97crvBpzg","pICAha0nsb0",];//tsfh amaria/battlecry/illumina
+var tsfh2 = ["Hcj7dVA8Mr8","WYNqrdOQ_p8","xW3MvrC2YcY","fbQrfB2kz94","5nBRdjXDRhw","yzQdbaeJ8IU"];
+var consideration = ["6vCxBQy2SOk","CRd1sXmTcA0","6sZVZJOfIC8","mTdMWf3dOHo","KG7mgl6v41c","tZSogDCejlw","5EA0Zkgh__U","Xpzqox6LCcA"];
+var ytlist = defaultlist; //current yt playlist
+var underlist = ["QyPR77rg1to","c5daGZ96QGU","tz82xbLvK_k","mZRP7nQkfrM","IkOK8tdEsFY","x_P5smsopK0","5P8V4mP5RLg","EBhFHJMVfiI","hMa4hZQbrms","2TgO-tN5wAM","YZ3XjVVNagU","qrBB3_rFPjg","aWBtpBwzzdM","Zzo6L3wsf8c","zdeZwAk6ULE","N3epEVMNJdY","Zz1bfhtKsHM","tDuEWw648jo","wRUdj1WgwIE","8wSYwqbp4S4","B4qdpiad_Q0","yWjavxcGfqM","l3sJ79C1Zyo","brP9Q08kEfk","mwrUem9vM_A"];
+var gothiclist = ["0lldiIo9VUg","xXjJiLBz0wU","ym_ya5Tj9Kk","AEfIT9ENnd0","sf8vHkVLrFA","1IW5etbddPo","DLyqSQhS6E0","9axgGQUMmaQ","BV5Snl8M5M0","dzXL9lycrh4","RUODWSb-mk4","lmQCWEVtAIk","W2iL5G2ROb0","5rEMsHGzgU4","edMhMzCux9s","bhFDdJsSylU","N8ArtfKc5QQ","3wkZfhbdF0A","DLdfiFdeGzI","lF0h1tXbecI","nrA-GJOPclg","Vjt88N78QCs","WG3ks2XBS_A","Flvq8eqpYgo","a6pfstI4A2A","qc2CE9Nu_ho"];
+var pianolist = [/*"w1d5nnCZdqY","W5_xFH5wqKM","5YMNBBB3EuA","O0NrHzokiFw",*/"bEL2GTtNPKE","-YzWlxbg34Y",/*"TcEacpB5wFw",*/"WsPJWGhp9Ng",/*"XsTjI75uEUQ",*/"LJttZ_Zfiw0"];
+var ytlists = [defaultlist,rwbylist,tsfh0,tsfh1,tsfh2,underlist,gothiclist,pianolist,customlist]; //list of yt playlists
+function changeList(listID){
+	if(ytlist != ytlists[listID]&&!lockSong&&!mute){
+		ytlist = ytlists[listID];
+		$("#inputCodeText").text("Input a number between 0 and "+(ytlist.length-1) +" to select a song.");
+		changeID(-1);
+	}    
+}
+
+function onYouTubeIframeAPIReady() {
+	player = new YT.Player('ytplayer', {
+		height: '1',
+		width: '0',
+		videoId: 'QLB6FbhKS6A',
+		events: {
+			'onReady': onPlayerReady,
+			'onStateChange': onPlayerStateChange,
+			'changeVideo' : changeVideo
+		}
+	});
+}
+
+// 4. The API will call this function when the video player is ready.
+function onPlayerReady(event) {
+	event.target.playVideo();
+}
+
+function onPlayerStateChange(event) { 
+	if (event.data === 0 && !mute) {
+		changeID(-1);
+	}
+	/*else{
+		window.clearTimeout(timeoutVar);
+	}*/
+}
+function stopVideo() {
+	player.stopVideo();
+}
+
+function changeVideo(){
+	//window.clearTimeout(timeoutVar);
+	//timeoutVar = window.setTimeout(changeID(-1), 10000000);
+	changeID(-1);
+}
+function changeID(IDNum){
+	if(!mute){
+		if(!lockSong){
+			if(IDNum<0||IDNum>=ytlist.length){
+				IDNum = parseInt(Math.random()*ytlist.length);
+			}
+			player.loadVideoById(ytlist[IDNum]);
+			player.playVideo();
+			$('#inputCode').val(IDNum);
+		}
+		else if(lockSong){
+			player.playVideo();
+		}
+	}
+}
+function tileLeft(tileNum){
+	if($.isNumeric(tileNum)&&(tileNum+9)%10!==0){
+		return tileNum-1;
+	}
+	return false;
+}
+function tileRight(tileNum){
+	if($.isNumeric(tileNum)&&tileNum%10!==0){
+		return tileNum+1;
+	}
+	return false;
+}
+function tileUp(tileNum){
+	if($.isNumeric(tileNum)&&tileNum>10){
+		return tileNum-10;
+	}
+	return false;
+}
+function tileDown(tileNum){
+	if($.isNumeric(tileNum)&&tileNum<91){
+		return tileNum+10;
+	}
+	return false;
+}
+function tileUpLeft(tileNum){
+	if(tileNum>10&&(tileNum+9)%10!==0)
+		return (tileUp(tileLeft(tileNum)));
+	return false;
+}
+function tileUpRight(tileNum){
+	if(tileNum>10&&tileNum%10!==0)
+		return (tileUp(tileRight(tileNum)));
+	return false;	
+}
+function tileDownLeft(tileNum){
+	if(tileNum<91&&(tileNum+9)%10!==0)
+		return (tileDown(tileLeft(tileNum)));
+	return false;
+}
+function tileDownRight(tileNum){
+	if(tileNum<91&&tileNum%10!==0)
+		return (tileDown(tileRight(tileNum)));
+	return false;
+}
+//*************** Functions-- targetTile
+function incrementState(targetTile){
+	//tileSum-=parseInt(targetTile.attr('data-state'),10);
+	targetTile.attr('data-state', parseInt(targetTile.attr('data-state'),10)+incrementValue);
+	while(targetTile.attr('data-state')>=states.length){
+		targetTile.attr('data-state', targetTile.attr('data-state')-states.length);	
+		tileSum-=states.length;
+	}
+	
+	targetTile.css('background-color', states[targetTile.attr('data-state')]);
+	targetTile.text(targetTile.attr('data-state'));
+	//tileSum+=parseInt(targetTile.attr('data-state'),10);
+}
+
+
+//***************Functions-- Tile class
+$('#Board').mouseleave(function(){
+	$('.Tile').removeClass('activeTile');
+	activeTiles = [];
+});
+$('.Tile').mouseover(function(){
+	let centerID = parseInt($(this).attr('data-id')); //ID of tile currntly hovered over
+	function cross(targetTile){ /****************Begin with brush functions*/
+		let cross = [];
+		if(tileUp(centerID))
+			cross.push(tileUp(centerID));
+		if(tileDown(centerID))
+			cross.push(tileDown(centerID));
+		if(tileLeft(centerID))
+			cross.push(tileLeft(centerID));
+		if (tileRight(centerID))
+			cross.push(tileRight(centerID));
+		return cross;
+	}
+	function row(targetTile){
+		let row = [];
+		let looperID = centerID;
+		while(tileLeft(looperID)){
+			looperID--;
+			row.push(looperID);	
+		}
+		looperID = centerID;
+		while(tileRight(looperID)){
+			looperID++;
+			row.push(looperID);
+		}
+		return row;
+	}
+	function column(targetTile){
+		let col = [];
+		let looperID = centerID;
+		while(tileUp(looperID)){
+			looperID-=10;
+			col.push(looperID);
+		}
+		looperID = centerID;
+		while(tileDown(looperID)){
+			looperID+=10;
+			col.push(looperID);
+		}
+		return col;
+	}
+	function leftDiag(targetTile){
+		let diag = [];
+		let looperID = centerID;
+
+		while(tileUpLeft(looperID)){
+			looperID-=11;
+			diag.push(looperID);
+
+		}
+		while(tileDownRight(looperID)){
+			looperID+=11;
+			diag.push(looperID);
+
+		}
+		return diag;
+	}
+	function rightDiag(targetTile){
+		let diag = [];
+		let looperID = centerID;
+		while(tileUpRight(looperID)){
+			looperID-=9;
+			diag.push(looperID);
+		}
+		while(tileDownLeft(looperID)){
+			looperID+=9;
+			diag.push(looperID);	
+		}
+		return diag;
+	}
+	function knight(targetTile){
+		let knight = [];
+		let looperID = centerID;
+		let up = tileUp(tileUp(looperID));
+		let down = tileDown(tileDown(looperID));
+		let left = tileLeft(tileLeft(looperID));
+		let right = tileRight(tileRight(looperID));
+		if(up){
+			if(tileLeft(up))
+				knight.push(tileLeft(up));
+			if(tileRight(up))
+				knight.push(tileRight(up));
+		}
+		if(down){
+			if(tileLeft(down))
+				knight.push(tileLeft(down));
+			if(tileRight(down))
+				knight.push(tileRight(down));
+		}
+		if(left){
+			if(tileUp(left))
+				knight.push(tileUp(left));
+			if(tileDown(left))
+				knight.push(tileDown(left));
+		}
+		if(right){
+			if(tileUp(right))
+				knight.push(tileUp(right));
+			if(tileDown(right))
+				knight.push(tileDown(right));
+		}
+		return knight;
+	}
+
+	let oldTiles = activeTiles; //old Tiles were current active Tiles.
+
+	activeTiles = [parseInt($(this).attr('data-id'))]; //reset with only center Tile
+	//Brushes
+	if(crossBrush)
+		cross($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});
+	if(colBrush){
+		column($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});
+	}
+	if(rowBrush){
+		row($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});	
+	}
+	if(leftDiagBrush){
+		leftDiag($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});
+	}
+	if(rightDiagBrush){
+		rightDiag($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});
+	}
+	if(knightBrush){
+		knight($(this)).forEach(function(arg){
+			activeTiles.push(arg);
+		});
+	}
+	let activeTileSet = new Set(activeTiles); //set removes duplicates
+	activeTiles=[...activeTileSet].sort(function(a, b){return a-b;});//sort activeTiles by id
+	//alert("ActiveTiles: "+activeTiles);
+	//alert("Equality :"+(activeTiles.toString()==oldTiles.toString())+"old: "+oldTiles+" new: "+activeTiles);
+	function arrEquals(arr1, arr2){
+		if(arr1.length!=arr2.length){
+			return false;
+		}
+		for(let i = 0; i<arr1.length; i++){
+			if(arr1[i]!=arr2[i])
+				return false;
+		}
+		return true;
+	}
+	if(!arrEquals(oldTiles, activeTiles)){
+		oldTiles.forEach(function(arg){ // remove activeTile from the old active tiles
+			if(activeTiles.indexOf(arg)<0){
+				$(".Tile[data-id='"+arg+"']").removeClass("activeTile pauseTile");
+				
+			}
+		});
+		activeScore = activeTiles.length*incrementValue;
+		activeTiles.forEach(function(arg){//add activeTile to the new active tiles
+			//activeScore+=parseInt($(".Tile[data-id='"+arg+"']").attr('data-state'),10);
+			if(oldTiles.indexOf(arg)<0){
+				$(".Tile[data-id='"+arg+"']").addClass("activeTile");
+				if(mute){
+					$(".Tile[data-id='"+arg+"']").addClass("pauseTile");
+				}
+			}
+		});
+	}
+	let tempTiles = []; //for hoverbrush
+	let temp = -1;
+	if(hoverBrush){ 
+		oldTiles.forEach(function(arg){
+			let tempTile = activeTiles.indexOf(arg); 
+			if(tempTile>-1){
+				tempTiles.push(arg);
+				activeTiles[tempTile] = temp; //do not change color of the old activetiles
+				temp--;
+			}
+		});
+		$(this).click();
+		for(let i = 0; i<tempTiles.length; i++){ //put the old active tiles back into the list
+			for(let j = 0; j<activeTiles.length; j++){
+				if(activeTiles[j]<0){
+					activeTiles[j] = tempTiles[i];
+					j+=activeTiles.length;//only fill in 1 tile
+				//	alert("Temps: "+ tempTiles);
+			}
+		}
+	}
+}
+
+$("#activeScoreLbl").text("Active Score: "+activeScore);
+});
+
+$('.Tile').click(function(){
+	tileSum+=activeScore;
+	activeTiles.forEach(function(arg){
+		if(arg!=-1)
+			incrementState($(".Tile[data-id='"+arg+"']"));	
+	});
+	if(tileSum==goal){
+		score++;
+		if(highScore<score)
+			highScore = score;
+		setGoal();
+	}
+
+	$("#scoreLbl").text("Score: "+ score);
+	$("#highScoreLbl").text("High Score: "+ highScore);
+	$("#tileSumLbl").text("Tile Sum: "+ tileSum);
+	$("#activeScoreLbl").text("Active Score: "+activeScore);
+	changeVideo();
+	//incrementState($(this));
+});
+
+//***************Functions-- Buttons
+$('#increaseBtn').click(function(){
+	if(incrementValue+1>=states.length)
+		incrementValue=0;
+	incrementValue++;
+	$('#increaseBtnText').text("IncrementValue: "+ incrementValue + "/ " + (states.length-1));
+});
+
+$('#brushesBtn').click(function(){
+	$('.menu').hide();
+	$('#brushesMenu').show();
+});
+$('#backBtn').click(function(){
+	$('.menu').hide();
+	$('#mainMenu').show();
+
+});
+
+$('#hoverBtn').click(function(){
+	hoverBrush = !hoverBrush;
+	if(hoverBrush){
+		$('#hoverBtnText').text("HOVER: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#hoverBtnText').text("HOVER: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#crossBtn').click(function(){
+	crossBrush = !crossBrush;
+	if(crossBrush){
+		$('#crossBtnText').text("CROSS: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#crossBtnText').text("CROSS: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#rowBtn').click(function(){
+	rowBrush = !rowBrush;
+	if(rowBrush){
+		$('#rowBtnText').text("ROW: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#rowBtnText').text("ROW: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#colBtn').click(function(){
+	colBrush = !colBrush;
+	if(colBrush){
+		$('#colBtnText').text("COL: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#colBtnText').text("COL: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#leftDiagBtn').click(function(){
+	leftDiagBrush = !leftDiagBrush;
+	if(leftDiagBrush){
+		$('#leftDiagBtnText').text("LEFT DIAG: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#leftDiagBtnText').text("LEFT DIAG: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#rightDiagBtn').click(function(){
+	rightDiagBrush = !rightDiagBrush;
+	if(rightDiagBrush){
+		$('#rightDiagBtnText').text("RIGHT DIAG: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#rightDiagBtnText').text("RIGHT DIAG: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#knightBtn').click(function(){
+	knightBrush = !knightBrush;
+	if(knightBrush){
+		$('#knightBtnText').text("KNIGHT: ON");
+		$(this).css('background-color', "green");
+	}
+	else{
+		$('#knightBtnText').text("KNIGHT: OFF");
+		$(this).css('background-color', "#DD3542");
+	}
+});
+//brushes end
+$('#clearBtn').click(function(){
+	$('.Tile').attr('data-state', 0);
+	$('.Tile').css('background-color', states[0]);
+	$('.Tile').text("");
+	activeTiles.forEach(function(arg){
+		$(".Tile[data-id='"+arg+"']").removeClass("activeTile");
+	});
+	activeTiles = [];
+	if(highScore<score)
+		highScore = score;
+	score = 0;
+	activeScore = 0;
+	tileSum = 0;
+	setGoal();
+});
+$('#upgradeBtn').click(function(){
+	let oldTiles = activeTiles;
+	activeTiles = [];
+	for(let i = 1;i<=100;i++){
+		activeTiles.push(i);
+	}
+	activeScore = activeTiles.length*incrementValue;
+	//alert(" tile id: "+ $('[data-id=0]').css('background-color');
+	$('.Tile[data-id='+ Math.floor(Math.random()*101)+']').click();
+	activeTiles = oldTiles;
+	activeScore = activeTiles.length*incrementValue;
+});
+$('#lockBtn').click(function(){
+	lockSong = !lockSong;
+	if(lockSong){
+		$(this).css('background-color', "green");
+	}
+	else{
+		$(this).css('background-color', "#DD3542");
+	}
+});
+$('#muteBtn').click(function(){
+	mute = !mute;
+	if(mute){
+		$(this).css('background-color', "#DD3542");
+		$("#muteBtnText").text("Sound");
+		player.pauseVideo();
+		activeTiles.forEach(function(arg){
+			$(".Tile[data-id='"+arg+"']").addClass("pauseTile");
+		});
+	}
+	else{
+		$(this).css('background-color', "green");
+		$("muteBtnText").text("Mute");
+		player.playVideo();
+		activeTiles.forEach(function(arg){
+			$(".Tile[data-id='"+arg+"']").removeClass("pauseTile");
+		});
+	}
+});
+
+$('#inputCode').bind('input',function(e){
+	
+	if (window.event && event.propertyName != "value")
+		return;
+	//clearTimeout(timeoutVar);
+	var changeNum = $(this).val();
+	if($.isNumeric(changeNum)&&changeNum!=ytlist.indexOf(player.getVideoData()['video_id'])){
+		var num = parseInt(changeNum);
+		changeID(num);
+	}
+	if(changeNum.length == 11 && typeof changeNum === 'string' && !lockSong &&!mute){
+		player.loadVideoById(changeNum);
+		player.playVideo();
+		customlist.push(changeNum);
+		ytlist=customlist;
+		$('#inputCode').val(ytlist.indexOf(changeNum));
+	}
+
+	
+});
+
+//**************Keypresses
+$(document).ready(function(){    
+	$(document).keyup(function(event){
+		//alert(event.which);
+		switch(event.which){
+        case 88://x clears the board
+        $('#clearBtn').click();
+        break;
+        case 73:// i = upgrades the board
+        $('#upgradeBtn').click();
+        break;
+        case 82://r = rwby
+        changeList(1);
+        break;
+        case 68://d = defaultlist
+        changeList(0);
+        break;  
+        case 81://q = tsfh0 classics
+        changeList(2);
+        break;     	
+        case 87://w = tsfh1 amaria/battlecry/illumina
+        changeList(3);
+        break;
+        case 69://e = tsfh2
+        changeList(4);
+        break;
+        case 85:// u = undertale
+        changeList(5);
+        break;  
+        case 71://g = gothic3
+        changeList(6);
+        break;  
+        case 80://p = piano
+        changeList(7);
+        break; 
+    	}
+	});
+//*************Initialize things
+window.ondragstart = function() { return false; }  
+window.onload = function(){
+	//ytlist = ytlists[Math.floor(Math.random()*ytlists.length)];
+	changeList(Math.floor(Math.random()*(ytlists.length-1))); //-1 so we don't roll customlist
+	changeID(-1);
+
+	setTimeout(function(){
+		$("#loadWrapper").hide();
+		$('body').addClass('loaded');
+		$("#gameWrapper").show();
+
+	}, 10000);
+
+
+};
+$('#increaseBtnText').text("IncrementValue: "+ incrementValue + "/ " + (states.length-1));
+$('#clearBtn').click();//initialize board color
+$('#inputCode').val(1);//initialize increasebutton text
+});
+
+
+</script>
+
+
+</body>
+</html>

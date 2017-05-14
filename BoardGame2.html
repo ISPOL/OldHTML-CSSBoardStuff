@@ -1,0 +1,296 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<style>
+	#Board{
+        height:520px;
+        width:520px;
+        background-color:silver;
+        
+    }
+    #GameSpace{
+        float:left;
+    }
+    #OtherSpace{
+        float:right;
+    }
+    .Tile{
+        height:50px;
+        width:50px;
+        margin:1px;
+        float:left;
+        box-shadow: .5 .5 .8 #000; /*Needs work*/
+        background-color:white;
+
+
+    }
+    .Button{
+        height:50px;
+        width:150px;
+        margin:1px;
+        float:left;
+        background-color:#922323;
+        color:#FFF;
+        font-family:"Courier New";
+        font-style:oblique;
+        /*box-shadow: inset .5px .5px #000, inset .5px -.5px #FFF, -.5px .5px #000, inset -.5px -.5px #FFF; Needs work*/
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -2px 0 rgba(0,0,0,.25), inset 0 -3px 0 rgba(255,255,255,.2), 0 1px 0 rgba(0,0,0,.1);
+    }
+    .Tile:hover{
+        opacity: .85;
+    }
+    #upgrade{
+    	background-color:#22BB22;
+    }
+      #looper{
+    	background-color:#BBBB22;
+    }
+	</style>
+</head>
+<body>
+<div id = "GameSpace">
+    <div id = "Board">
+        <!--Place tiles here-->
+       
+    </div>
+</div>
+
+<div id = "OtherSpace">
+    <!-- Score, etc -->
+   <!--input id="looper" class="Button" type="submit" value ="Loop (L)"/-->
+    <input id="upgrade" class="Button" type="submit" value ="Tile Upgrade (U): 1"/>
+     <input id="clear" class="Button" type="submit" value ="Clear All (X)"/>
+      <input id="eraser" class="Button" type="submit" value ="Eraser (Space)"/>
+      <div id="Score"><>
+</div>
+
+<script type = "text/javascript">
+ window.ondragstart = function() { return false; }                       
+ var backgroundSnd = new Audio("Sounds/OtomataTest1.wav");
+ var eraser = false;
+ var upgrade = 1;
+ var board = [];
+ var NoteChords = ["A","B","C","D","E","F","G"];
+ //**********************************Sounds************************************************//
+ 
+
+ backgroundSnd.addEventListener('ended', function() {
+    //this.currentTime = Math.floor((Math.random() * 10) + 1);
+    this.currentTime = 0;
+    this.play();
+    this.muted = !this.muted;
+}, false);
+backgroundSnd.play();
+ 
+ for(var i = 0; i<100; i++){
+    board.push("<div class='Tile' draggable='false'></div>");
+ }
+$('#Board').html(board.join(''));
+advanceColor();
+
+function soundTest(){
+	var snd = new Audio("Sounds/Cricket.wav"); // buffers automatically when created
+	snd.play();
+};
+function soundA(){
+	var snd = new Audio("Sounds/La.wav"); // buffers automatically when created
+	snd.play();
+};
+
+function soundB(){
+	var snd = new Audio("Sounds/Xi.wav"); // buffers automatically when created
+	snd.play();
+};
+
+function soundC(){
+	var snd = new Audio("Sounds/Do.wav"); // buffers automatically when created
+	snd.play();
+};
+
+function soundD(){
+	var snd = new Audio("Sounds/Re.wav"); // buffers automatically when created
+	snd.play();
+};
+
+function soundE(){
+	var snd = new Audio("Sounds/Mi.wav"); // buffers automatically when created
+	snd.play();
+};
+
+function soundF(){
+	var snd = new Audio("Sounds/Fa.wav"); // buffers automatically when created
+	snd.play();
+};
+function soundG(){
+	var snd = new Audio("Sounds/So.wav"); // buffers automatically when created
+	snd.play();
+};
+
+
+function soundPlayer(num){
+    switch(num) {
+    case 1:
+        soundC();
+        break;
+    case 2:
+        soundD();
+        break;
+    case 3:
+        soundE();
+        break;
+     case 4:
+       soundF();
+        break;
+    case 5:
+        soundG();
+        break;
+    case 6:
+        soundA();
+        break;
+    case 7:
+        soundB();
+        break;
+    } 
+};
+//**********************************Colors************************************************//
+var ColorRGB = ["rgb(255, 255, 255)","rgb(255, 0, 0)","rgb(255, 165, 0)","rgb(255, 255, 0)","rgb(0, 128, 0)","rgb(0, 0, 255)","rgb(128, 0, 128)","rgb(0, 0, 0)"];
+function advanceColor(){
+$("div.Tile").mousedown();
+	
+};
+
+
+//**********************************UserInput************************************************//
+    //***************Keyboard*****************//
+$(document).ready(function(){
+   
+    $(document).keyup(function(event){
+    if(event.which == '88') //x clears the board!
+    {
+        clear();
+    }
+    else if(event.which =='85'){
+        
+        advanceColor();
+        
+       
+    }
+    else if(event.which =='76'){
+        
+        alert("test");        
+       $("#looper").click();
+       alert("test2");  
+    }
+    else if(event.which =='65'){
+        
+        soundA();
+    }
+    else if(event.which =='66'){
+       soundB();
+    }
+    else if(event.which =='67'){
+        soundC();
+    }
+    else if(event.which =='68'){
+        soundD();
+    }
+    else if(event.which =='69'){
+        soundE();
+    }
+    else if(event.which =='70'){
+       soundF();
+    }
+    else if(event.which =='71'){
+       soundG();
+    }
+     else if(event.which =='32'){
+        eraser = !eraser;
+    }
+    else
+        alert(event.which);
+});
+});
+/*function changeTile(n){
+    if( $(".Tile":nth-child(n)).css('background-color')=="rgb(0, 128, 0)"){
+         $(".Tile":nth-child(n)).css('background-color', "red");
+
+    }
+    
+}*/
+    //***************Buttons*****************//
+   
+function clear(){
+	  $(".Tile").css('background-color','white');
+      soundTest();
+	};
+$("#clear").click(function(){
+
+    //alert($(".Tile".css('background-color')));
+    clear();
+    
+});
+$("#upgrade").click(function(){
+    upgrade++;
+    if(upgrade>=ColorRGB.length)
+        upgrade = 1;
+    $(this).text("Upgrade (U): "+upgrade);
+
+    //alert($(".Tile".css('background-color')));
+
+    
+});
+$("#eraser").click(function(){
+
+    //alert($(".Tile".css('background-color')));
+    eraser = !eraser;
+    
+});
+$("#looper").click(function(){
+	var i = 0;
+    //alert($(".Tile".css('background-color')));
+   for(i = 0; i<100; i++){
+    	setInterval(function(){advanceColor()}, 1000);
+    	console.log(i);
+    	//alert(i);
+    	}
+
+    });
+    //***************Tiles*****************//
+$("div.Tile").mouseover(function(){
+    if(eraser)
+        $(this).css('background-color', ColorRGB[0]);
+    else if(upgrade>0)
+        $(this).mousedown();
+
+});
+/*
+$("div.Tile").mouseover(function(){
+    if(eraser)
+        $(this).css('background-color', ColorRGB[0]);
+    else if(upgrade)
+        $(this).mousedown();
+
+});
+*/
+$("div.Tile").mousedown(function(){
+   
+    var color = 0;
+    for(var i = 0; i<ColorRGB.length; i++){
+        if( $(this).css('background-color')==ColorRGB[i]){
+             color = i+upgrade;
+            while(color>=ColorRGB.length)
+                color%=ColorRGB.length;
+            i+=ColorRGB.length;  
+            $(this).fadeIn();
+            $(this).css('background-color',ColorRGB[color]);
+            soundPlayer(color); 
+            //NoteChords[color];
+        }
+
+    }
+});
+
+
+</script>
+</body></html>
